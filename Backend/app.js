@@ -67,7 +67,7 @@ app.get('/', (req, res) => {
 
 // Basic error handling
 app.use((err, req, res, next) => {
-  console.error('Error stack:', err.stack);  // full stack
+  logger.error('Error stack:', err.stack);  // full stack
   logger.error(err.message || 'Unknown error');
 
   res.status(500).json({

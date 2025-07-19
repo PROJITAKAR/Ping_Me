@@ -6,6 +6,20 @@ import { Provider } from "react-redux";
 import store from "./app/store.js";
 import axios from "axios";
 
+const getBaseURL = () => {
+  if (import.meta.env.DEV) {
+    return ''; 
+  }
+  
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  if (!backendUrl) {
+    throw new Error('VITE_BACKEND_URL environment variable is required in production');
+  }
+  
+  return backendUrl;
+};
+
+axios.defaults.baseURL = getBaseURL();
 axios.defaults.withCredentials = true;
 
 

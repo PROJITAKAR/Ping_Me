@@ -147,7 +147,6 @@ const Chatbox = () => {
 
     try {
       const response = await dispatch(createMessage(formData)).unwrap();
-      console.log(response);
       if (response) {
         dispatch(updateSelectedChatLatestMessage(response));
       }
@@ -173,6 +172,7 @@ const Chatbox = () => {
       await dispatch(deleteMessageForMe(messageId)).unwrap();
     } catch (error) {
       console.error("Failed to delete for me:", error);
+      toast.error("Failed to delete for me");
     }
   };
 
@@ -181,6 +181,7 @@ const Chatbox = () => {
       await dispatch(deleteMessageForEveryone(messageId)).unwrap();
     } catch (error) {
       console.error("Failed to delete for Everyone:", error);
+      toast.error("Failed to delete for Everyone");
     }
   };
 

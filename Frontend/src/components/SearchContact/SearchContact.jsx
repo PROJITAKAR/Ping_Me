@@ -20,7 +20,6 @@ const SearchContact = () => {
     const getContact = async () => {
       try {
         const result = await dispatch(fetchAllUsers()).unwrap();
-        console.log(result);
         setContacts(result);
       } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -54,7 +53,6 @@ const SearchContact = () => {
       };
 
       const result = await dispatch(createChat(payload)).unwrap();
-      console.log("Chat created:", result);
       await dispatch(getChat(result._id)).unwrap();
       toast.success("Chat created successfully");
       navigate("/chats");

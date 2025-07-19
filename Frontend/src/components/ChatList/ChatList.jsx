@@ -31,7 +31,6 @@ const ChatList = () => {
     const getChatList = async () => {
       try {
         const response = await dispatch(fetchChatList()).unwrap();
-        console.log("Chat list fetched:", response);
 
         if (socket) {
           if (socket.connected) {
@@ -66,7 +65,6 @@ const ChatList = () => {
     try {
       const result = await dispatch(getChat(chatId)).unwrap();
       dispatch(resetUnreadCount(chatId));
-      console.log("Chat fetched:", result);
       socket.emit("joinChat", chatId);
     } catch (error) {
       console.error("Failed to get chat:", error);

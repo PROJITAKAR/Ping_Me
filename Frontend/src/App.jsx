@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import ChatApp from "./pages/ChatApp/ChatApp";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import ChatList from "./components/ChatList/ChatList";
