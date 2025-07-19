@@ -13,7 +13,7 @@ import authRoutes from './routes/authRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import msgRoutes from './routes/msgRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import socketHandler from './socket/socket.js';
+import socketHandler from './Socket/socket.js';
 import logger from './utils/logger.js';
 
 
