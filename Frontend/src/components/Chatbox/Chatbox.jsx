@@ -313,7 +313,7 @@ const Chatbox = () => {
                       >
                         {!isSentByUser && (
                           <img
-                            src="https://i.pinimg.com/736x/ad/39/25/ad392542df831f9fea026691d1ecec67.jpg"
+                            src={selectedChat?.otherUser?.profilePic ||"https://i.pinimg.com/736x/ad/39/25/ad392542df831f9fea026691d1ecec67.jpg"}
                             className="w-8 h-8 rounded-full shadow-lg ring-2 ring-slate-700/50"
                             alt="Sender"
                           />
