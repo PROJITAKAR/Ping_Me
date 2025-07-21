@@ -85,7 +85,7 @@ const SearchContact = () => {
             filteredContacts.map((contact) => (
               <li
                 key={contact._id}
-                className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 transition-all duration-200 rounded-xl cursor-pointer shadow-sm border border-slate-600 hover:border-slate-500"
+                className="w-full px-4 py-3 bg-slate-700 hover:bg-slate-600 transition-all duration-200 rounded-xl cursor-pointer shadow-sm border border-slate-600 hover:border-slate-500 "
                 onClick={() => {
                   handleCreateChat(contact._id);
                 }}
@@ -93,7 +93,7 @@ const SearchContact = () => {
                 <div className="flex items-center gap-3">
                   <div className="relative w-10 h-10 mr-3">
                     <img
-                      src={`https://i.pinimg.com/736x/ad/39/25/ad392542df831f9fea026691d1ecec67.jpg`}
+                      src={contact.profilePic || `https://i.pinimg.com/736x/ad/39/25/ad392542df831f9fea026691d1ecec67.jpg`}
                       alt={`${contact.username}`}
                       className="w-10 h-10 rounded-full object-cover border-2 border-slate-600"
                     />

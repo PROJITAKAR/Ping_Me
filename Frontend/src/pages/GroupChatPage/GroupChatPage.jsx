@@ -30,7 +30,7 @@ const LeftPanel = () => (
 );
 
 const RightPanel = () => (
-  <div className="h-full m-5 px-8 py-6 text-white rounded-lg flex flex-col bg-gradient-to-b from-slate-900 to-slate-800 border border-slate-700">
+  <div className="h-full m-5 px-8 py-6 text-white rounded-lg flex flex-col bg-gradient-to-b from-slate-900 to-slate-800 border border-slate-700 overflow-y-auto">
     {/* Hero Section */}
     <div className="flex-1 flex flex-col justify-center items-center max-w-2xl mx-auto text-center">
       {/* Main Icon */}
