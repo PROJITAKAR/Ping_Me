@@ -19,7 +19,8 @@ import { useSocket } from "../../context/SocketContext";
 import formatTimeAgo from "../../utils/formatTimeAgo";
 import { IoCheckmarkDoneSharp, IoCheckmarkSharp } from "react-icons/io5";
 import { markMessagesAsRead } from "../../features/chat/chatSlice";
-import { FiTrash2, FiUserX } from "react-icons/fi";
+import { FiTrash2, FiUserX, FiCopy } from "react-icons/fi";
+import { MdContentCopy } from "react-icons/md";
 
 const Chatbox = () => {
   const [message, setMessage] = useState("");
@@ -39,6 +40,16 @@ const Chatbox = () => {
   const { typingUsersByChatId } = useSelector((state) => state.chat);
   const [typingDots, setTypingDots] = useState(".");
   const fileInputRef = useRef(null);
+  const chatContainerRef = useRef(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useEffect(() => {
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const hasOverflow = container.scrollHeight > container.clientHeight;
+    setIsOverflowing(hasOverflow);
+  }, [messages]);
 
   const getDateOnly = (dateString) => {
     const date = new Date(dateString);
@@ -185,6 +196,15 @@ const Chatbox = () => {
     }
   };
 
+  const handleCopyMessage = async (messageText) => {
+    try {
+      await navigator.clipboard.writeText(messageText);
+    } catch (error) {
+      console.error("Failed to copy message:", error);
+      toast.error("Failed to copy message");
+    }
+  };
+
   if (!selectedChat) {
     return (
       <div className="h-full flex-1 m-5 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white shadow-2xl flex items-center justify-center backdrop-blur-sm">
@@ -275,7 +295,12 @@ const Chatbox = () => {
         </div>
 
         <div className="absolute inset-0 my-16 bg-[url('https://i.pinimg.com/736x/ad/39/25/ad392542df831f9fea026691d1ecec67.jpg')] bg-cover bg-center opacity-3 pointer-events-none" />
-        <div className="flex-1 overflow-y-auto px-4 py-8 custom-scrollbar relative flex flex-col-reverse gap-y-5">
+        <div
+          ref={chatContainerRef}
+          className={`flex-1 overflow-y-auto px-4 pb-8 custom-scrollbar relative flex ${
+            isOverflowing ? "flex-col-reverse" : "flex-col"
+          }   gap-y-5`}
+        >
           {/* Faint background image */}
           <div className="relative z-10 space-y-5 mt-6">
             {messages.length > 0 ? (
@@ -283,7 +308,7 @@ const Chatbox = () => {
                 .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
                 .map((msg, index, arr) => {
                   const isSentByUser = msg.sender._id === user._id;
-                  const isLastMessage = index === arr.length - 1;
+                  const isLastMessage = index >= arr.length - 2;
                   const isDeleted = msg.isDeleted === true;
                   const currentDate = getDateOnly(msg.createdAt);
                   const previousDate =
@@ -307,13 +332,16 @@ const Chatbox = () => {
                           e.preventDefault();
                           setContextMsgId(msg._id);
                         }}
-                        className={`flex ${
-                          isSentByUser ? "justify-end" : "items-start"
+                        className={`flex  ${
+                          isSentByUser ? "justify-end" : "justify-start"
                         } group relative`}
                       >
                         {!isSentByUser && (
                           <img
-                            src={selectedChat?.otherUser?.profilePic ||"https://i.pinimg.com/736x/ad/39/25/ad392542df831f9fea026691d1ecec67.jpg"}
+                            src={
+                              selectedChat?.otherUser?.profilePic ||
+                              "https://i.pinimg.com/736x/ad/39/25/ad392542df831f9fea026691d1ecec67.jpg"
+                            }
                             className="w-8 h-8 rounded-full shadow-lg ring-2 ring-slate-700/50 object-cover"
                             alt="Sender"
                           />
@@ -358,6 +386,32 @@ const Chatbox = () => {
 
                               {/* Delete box */}
                               <div className="bg-slate-800/95 backdrop-blur-md border border-slate-600/50 rounded-xl shadow-2xl px-4 py-3 space-y-2 w-max min-w-[180px]">
+                                {msg.text && !msg.isDeleted && (
+                                  <button
+                                    className="text-sm text-slate-200 hover:text-red-400 hover:bg-red-500/10 text-left w-full transition-colors duration-200 p-2 rounded-lg flex items-center gap-2"
+                                    title="Copy Message"
+                                    onClick={() => {
+                                      handleCopyMessage(msg.text);
+                                    }}
+                                  >
+                                    <MdContentCopy className="w-4 h-4" />
+                                    Copy
+                                  </button>
+                                )}
+                                {msg.attachments &&
+                                  msg.attachments.length > 0 &&
+                                  !msg.isDeleted && (
+                                    <button
+                                      className="text-sm text-slate-200 hover:text-red-400 hover:bg-red-500/10 text-left w-full transition-colors duration-200 p-2 rounded-lg flex items-center gap-2"
+                                      title="Copy Message"
+                                      onClick={() => {
+                                        handleCopyMessage(msg.attachments);
+                                      }}
+                                    >
+                                      <MdContentCopy className="w-4 h-4" />
+                                      Copy Link
+                                    </button>
+                                  )}
                                 <button
                                   className="text-sm text-slate-200 hover:text-orange-400 hover:bg-orange-500/10 text-left w-full transition-colors duration-200 p-2 rounded-lg flex items-center gap-2"
                                   title="Delete for Me"
@@ -368,7 +422,7 @@ const Chatbox = () => {
                                   <FiTrash2 className="w-4 h-4" />
                                   Delete for Me
                                 </button>
-                                {isSentByUser && (
+                                {isSentByUser && !msg.isDeleted && (
                                   <button
                                     className="text-sm text-slate-200 hover:text-red-400 hover:bg-red-500/10 text-left w-full transition-colors duration-200 p-2 rounded-lg flex items-center gap-2"
                                     title="Delete for Everyone"
@@ -410,23 +464,35 @@ const Chatbox = () => {
 
                                 if (isImage) {
                                   return (
-                                    <img
+                                    <a
                                       key={idx}
-                                      src={url}
-                                      alt="attachment"
-                                      className="rounded-xl max-w-xs max-h-60 shadow-lg transition-all duration-200 hover:shadow-xl"
-                                    />
+                                      href={url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      <img
+                                        src={url}
+                                        alt="attachment"
+                                        className="rounded-xl max-w-xs max-h-60 shadow-lg transition-all duration-200 hover:shadow-xl"
+                                      />
+                                    </a>
                                   );
                                 }
 
                                 if (isVideo) {
                                   return (
-                                    <video
+                                    <a
                                       key={idx}
-                                      src={url}
-                                      controls
-                                      className="rounded-xl max-w-xs max-h-40 shadow-lg"
-                                    />
+                                      href={url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      <video
+                                        src={url}
+                                        className="rounded-xl max-w-xs max-h-40 shadow-lg cursor-pointer"
+                                        controls
+                                      />
+                                    </a>
                                   );
                                 }
 
